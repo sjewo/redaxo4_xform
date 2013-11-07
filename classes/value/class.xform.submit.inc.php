@@ -24,9 +24,11 @@ class rex_xform_submit extends rex_xform_abstract
     if (isset($this->params['warning'][$this->getId()])) $wc = $this->params['warning'][$this->getId()] . ' ';
 
     $this->params['form_output'][$this->getId()] = '
-    <p class="formsubmit ' . $this->getHTMLClass() . '">
-    <input type="submit" class="submit ' . $wc . '" name="' . $this->getFieldName() . '" id="' . $this->getFieldId() . '" value="' . htmlspecialchars(stripslashes(rex_translate($this->getValue()))) . '" />
-    </p>';
+    <div class="control-group">
+    <div class="controls formsubmit ' . $this->getHTMLClass() . '">
+    <button type="submit" class="btn submit ' . $wc . '" name="' . $this->getFieldName() . '" id="' . $this->getFieldId() . '" >' . htmlspecialchars(stripslashes(rex_translate($this->getValue()))) . '</button>
+    </div>
+    </div>';
 
     $this->params['value_pool']['email'][$this->getName()] = stripslashes($this->getValue());
 

@@ -27,10 +27,12 @@ class rex_xform_text extends rex_xform_abstract
     }
 
     $this->params['form_output'][$this->getId()] = '
-      <p class="formtext formlabel-' . $this->getName() . '" id="' . $this->getHTMLId() . '">
-        <label class="text' . $wc . '" for="' . $this->getFieldId() . '" >' . $this->getLabel() . '</label>
+      <div class="control-group formlabel-' . $this->getName() . '" id="' . $this->getHTMLId() . '">
+        <label class="control-label text' . $wc . '" for="' . $this->getFieldId() . '" >' . $this->getLabel() . '</label>
+	<div class="controls">
         <input type="text" class="text' . $classes . $wc . '" name="' . $this->getFieldName() . '" id="' . $this->getFieldId() . '" value="' . htmlspecialchars(stripslashes($this->getValue())) . '" />
-      </p>';
+	</div>
+      </div>';
 
     $this->params['value_pool']['email'][$this->getName()] = stripslashes($this->getValue());
     if ($this->getElement(4) != 'no_db') {

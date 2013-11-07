@@ -85,10 +85,12 @@ class rex_xform_select extends rex_xform_abstract
     $SEL->setStyle(' class="select ' . $wc . '"');
 
     $this->params['form_output'][$this->getId()] = '
-      <p class="formselect ' . $this->getHTMLClass() . '" id="' . $this->getHTMLId() . '">
-      <label class="select ' . $wc . '" for="' . $this->getFieldId() . '" >' . $this->getLabel() . '</label>' .
+      <div class="control-group formselect ' . $this->getHTMLClass() . '" id="' . $this->getHTMLId() . '">
+      <label class="control-label select ' . $wc . '" for="' . $this->getFieldId() . '" >' . $this->getLabel() . '</label>
+      <div class="controls">' .
     $SEL->get() .
-      '</p>';
+      '</div>
+	</div>';
 
     $this->params['value_pool']['email'][$this->getName()] = $this->getValue();
     if ($this->getElement(4) != 'no_db') $this->params['value_pool']['sql'][$this->getName()] = $this->getValue();

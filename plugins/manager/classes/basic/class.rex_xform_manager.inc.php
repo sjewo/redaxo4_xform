@@ -13,13 +13,6 @@ if (!function_exists('rex_xform_manager_checkField')) {
   }
 }
 
-if (!function_exists('rex_xform_manager_checkLabelInTable')) {
-  function rex_xform_manager_checkLabelInTable($l, $v)
-  {
-    return rex_xform_manager::checkLabelInTable($l, $v);
-  }
-}
-
 class rex_xform_manager
 {
 
@@ -697,7 +690,7 @@ class rex_xform_manager
        }
        $gr = rex_sql::factory();
        // $gr->debugsql = 1;
-       $gr->setQuery('select * from rex_xform_field where type_name="be_manager_relation" and f3="' . $table['table_name'] . '"');
+       $gr->setQuery('select * from '.$REX['TABLE_PREFIX'].'xform_field where type_name="be_manager_relation" and f3="' . $table['table_name'] . '"');
        $relation_fields = $gr->getArray();
        foreach ($relation_fields as $t) {
          $rel_id = 'rel-' . $t['table_name'] . '-' . $t['f1'];
@@ -837,13 +830,13 @@ class rex_xform_manager
 
   public function getDataListQuery($table, $rex_xform_filter = array(), $rex_xform_searchfields = array(), $rex_xform_searchtext = '')
   {
-
+    global $REX;
     $where = false;
 
     $sql = 'select * from ' . $table['table_name'];
 
     $sql_felder = new rex_sql;
-    $sql_felder->setQuery("SELECT * FROM rex_xform_field WHERE table_name='" . $table['table_name'] . "' AND type_id='value' ORDER BY prio");
+    $sql_felder->setQuery('SELECT * FROM '.$REX['TABLE_PREFIX'].'xform_field WHERE table_name="' . $table['table_name'] . '" AND type_id="value" ORDER BY prio');
 
     $felder = '';
     $max = $sql_felder->getRows();
@@ -859,7 +852,7 @@ class rex_xform_manager
     }
 
     $sql .= $this->getDataListQueryWhere($rex_xform_filter, $rex_xform_searchfields, $rex_xform_searchtext);
-    $sql = rex_register_extension_point('XFORM_DATA_LIST_SQL', $sql);
+    $sql = rex_register_extension_point('XFORM_DATA_LIST_SQL', $sql, array('table' => $table));
 
     return $sql;
   }
@@ -903,7 +896,7 @@ class rex_xform_manager
 
     $tb = rex_sql::factory();
     // $tb->debugsql = 1;
-    $tb->setQuery('select * from rex_xform_table ' . $where . ' order by prio,name');
+    $tb->setQuery('select * from '.$REX['TABLE_PREFIX'].'xform_table ' . $where . ' order by prio,name');
     return $tb->getArray();
   }
 
@@ -1252,19 +1245,19 @@ class rex_xform_manager
      }
 
      $xform->setActionField('showtext', array('', '<p>' . $I18N->msg('thankyouforentry') . '</p>'));
-     $xform->setObjectparams('main_table', 'rex_xform_field'); // f�r db speicherungen und unique abfragen
+     $xform->setObjectparams('main_table', $REX['TABLE_PREFIX'].'xform_field'); // f�r db speicherungen und unique abfragen
 
      if ($func == 'edit') {
        $xform->setObjectparams('submit_btn_label', $I18N->msg('save'));
        $xform->setHiddenField('field_id', $field_id);
-       $xform->setActionField('manage_db', array('rex_xform_field', "id=$field_id"));
+       $xform->setActionField('manage_db', array($REX['TABLE_PREFIX'].'xform_field', "id=$field_id"));
        $xform->setObjectparams('main_id', $field_id);
        $xform->setObjectparams('main_where', "id=$field_id");
        $xform->setObjectparams('getdata', true);
 
      } elseif ($func == 'add') {
        $xform->setObjectparams('submit_btn_label', $I18N->msg('add'));
-       $xform->setActionField('manage_db', array('rex_xform_field'));
+       $xform->setActionField('manage_db', array($REX['TABLE_PREFIX'].'xform_field'));
 
      }
 
@@ -1314,10 +1307,10 @@ class rex_xform_manager
 
      $sf = new rex_sql();
      // $sf->debugsql = 1;
-     $sf->setQuery('select * from rex_xform_field where table_name="' . $table['table_name'] . '" and id=' . $field_id);
+     $sf->setQuery('select * from '.$REX['TABLE_PREFIX'].'xform_field where table_name="' . $table['table_name'] . '" and id=' . $field_id);
      $sfa = $sf->getArray();
      if (count($sfa) == 1) {
-       $query = 'delete from rex_xform_field where table_name="' . $table['table_name'] . '" and id=' . $field_id;
+       $query = 'delete from '.$REX['TABLE_PREFIX'].'xform_field where table_name="' . $table['table_name'] . '" and id=' . $field_id;
        $delsql = new rex_sql;
        // $delsql->debugsql=1;
        $delsql->setQuery($query);
@@ -1419,7 +1412,7 @@ class rex_xform_manager
            ';
        echo rex_content_block($table_echo);
 
-       $sql = 'select * from rex_xform_field where table_name="' . $table['table_name'] . '" order by prio';
+       $sql = 'select * from '.$REX['TABLE_PREFIX'].'xform_field where table_name="' . $table['table_name'] . '" order by prio';
        $list = rex_list::factory($sql, 30);
        // $list->debug = 1;
        $list->setColumnFormat('id', 'Id');
@@ -1481,38 +1474,22 @@ class rex_xform_manager
     global $REX;
 
     $tb = rex_sql::factory();
-    $tb->setQuery('select * from rex_xform_field where table_name="' . $table . '" order by prio');
+    $tb->setQuery('select * from '.$REX['TABLE_PREFIX'].'xform_field where table_name="' . $table . '" order by prio');
     return $tb->getArray();
   }
 
   static function checkField($l, $v, $p)
   {
     global $REX;
-    $q = 'select * from rex_xform_field where table_name="' . $p['table_name'] . '" and ' . $l . '="' . $v . '" LIMIT 1';
+    $q = 'select * from '.$REX['TABLE_PREFIX'].'xform_field where table_name="' . $p['table_name'] . '" and ' . $l . '="' . $v . '" LIMIT 1';
     $c = rex_sql::factory();
     // $c->debugsql = 1;
     $c->setQuery($q);
     if ($c->getRows() > 0) {
       // FALSE -> Warning = TRUE;
       return true;
-    } else {
-      return false;
     }
-  }
-
-  static function checkLabelInTable($l, $v)
-  {
-    global $REX;
-    $q = 'select * from rex_xform_table where ' . $l . '="' . $v . '" LIMIT 1';
-    $c = rex_sql::factory();
-    // $c->debugsql = 1;
-    $c->setQuery($q);
-    if ($c->getRows() > 0) {
-      // FALSE -> Warning = TRUE;
-      return true;
-    } else {
-      return false;
-    }
+    return false;
   }
 
   function setFilterFields($DataPageFilterFields = array())
@@ -1540,8 +1517,8 @@ class rex_xform_manager
     // Tabellenset in die Basics einbauen, wenn noch nicht vorhanden
     $c = new rex_sql;
     $c->debugsql = $debug;
-    $c->setQuery('DELETE FROM rex_xform_table where table_name="' . $data_table . '"');
-    $c->setTable('rex_xform_table');
+    $c->setQuery('DELETE FROM '.$REX['TABLE_PREFIX'].'xform_table where table_name="' . $data_table . '"');
+    $c->setTable($REX['TABLE_PREFIX'].'xform_table');
 
     $params['table_name'] = $data_table;
     if (!isset($params['status']))
@@ -1588,12 +1565,12 @@ class rex_xform_manager
 
       $gs = rex_sql::factory();
       $gs->debugsql = $debug;
-      $gs->setQuery('delete from rex_xform_field where table_name="' . $table_name . '" and type_id="' . $type_id . '" and type_name="' . $type_name . '" and f1="' . $f1 . '"');
+      $gs->setQuery('delete from '.$REX['TABLE_PREFIX'].'xform_field where table_name="' . $table_name . '" and type_id="' . $type_id . '" and type_name="' . $type_name . '" and f1="' . $f1 . '"');
 
       // fielddaten - datensatz anlegen
       $af = rex_sql::factory();
       $af->debugsql = $debug;
-      $af->setTable('rex_xform_field');
+      $af->setTable($REX['TABLE_PREFIX'].'xform_field');
       foreach ($field as $k => $v) {
         $af->setValue($k, $v);
       }
@@ -1691,5 +1668,58 @@ class rex_xform_manager
     // - Default value
 
   }
+
+  static function checkMediaInUse($params)
+  {
+    global $REX, $I18N;
+
+    $warning = $params['subject'];
+
+    $sql = rex_sql::factory();
+    $sql->setQuery('SELECT `table_name`, `type_name`, `f1` FROM `' . $REX['TABLE_PREFIX'] . 'xform_field` WHERE `type_id`="value" AND `type_name` IN("be_medialist","be_mediapool")');
+
+    $rows = $sql->getRows();
+
+    if ($rows == 0)
+      return $warning;
+
+    $where = array();
+    $filename = addslashes($params['filename']);
+    while ($sql->hasNext()) {
+      $table = $sql->getValue('table_name');
+      switch ($sql->getValue('type_name')) {
+        case 'be_mediapool':
+          $where[$table][] = $sql->getValue('f1') . '="' . $filename . '"';
+          break;
+        case 'be_medialist':
+          $where[$table][] = 'FIND_IN_SET("' . $filename . '", ' . $sql->getValue('f1') . ')';
+          break;
+        default :
+          trigger_error('Unexpected fieldtype "' . $sql->getValue('type_name') . '"!', E_USER_ERROR);
+      }
+      $sql->next();
+    }
+
+    $tupel = '';
+    foreach ($where as $table => $cond) {
+      $sql->setQuery('SELECT id FROM ' . $table . ' WHERE ' . implode(' OR ', $cond));
+
+      while ($sql->hasNext()) {
+        $sql_tupel = rex_sql::factory();
+        $sql_tupel->setQuery('SELECT name FROM `' . $REX['TABLE_PREFIX'] . 'xform_table` WHERE `table_name`="' . $table . '"');
+
+        $tupel .= '<li><a href="javascript:openPage(\'index.php?page=xform&amp;subpage=manager&amp;tripage=data_edit&amp;table_name=' . $table . '&amp;data_id=' . $sql->getValue('id') . '&amp;func=edit\')">' . $sql_tupel->getValue('name') . ' [id=' . $sql->getValue('id') . ']</a></li>';
+
+        $sql->next();
+      }
+    }
+
+    if ($tupel != '') {
+      $warning[] = 'Tabelle<br /><ul>' . $tupel . '</ul>';
+    }
+
+    return $warning;
+  }
+
 
 }

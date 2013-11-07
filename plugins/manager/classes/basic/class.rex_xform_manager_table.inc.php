@@ -42,13 +42,43 @@ class rex_xform_manager_table
     return $a;
   }
 
+  // -------------------------------------------------------------------------
 
+  static function checkTableName($table)
+  {
+    preg_match("/([a-z])+([0-9a-z\_])*/", $table, $matches);
+    if (count($matches) > 0 && current($matches) == $table) {
+      return true;
+    }
+    return false;
+  }
+
+
+  // -------------------------------------------- xform custom function
+
+  static function xform_checkTableName($label = '', $table = '', $params = '')
+  {
+    return self::checkTableName($table);
+  }
+
+  static function xform_existTableName($l = '', $v = '', $params = '')
+  {
+    global $REX;
+    $q = 'select * from '.$REX['TABLE_PREFIX'].'xform_table where table_name="' . $v . '" LIMIT 1';
+    $c = rex_sql::factory();
+    // $c->debugsql = 1;
+    $c->setQuery($q);
+    if ($c->getRows() > 0) {
+      return true;
+    }
+    return false;
+  }
 
   // -------------------------------------------------------------------------
 
   static function getTables($f = array())
   {
-
+    global $REX;
     $where = array();
     if (count($f) > 0) {
       foreach ($f as $t) {
@@ -66,7 +96,7 @@ class rex_xform_manager_table
 
     $tb = rex_sql::factory();
     // $tb->debugsql = 1;
-    $tb->setQuery('select * from rex_xform_table ' . $where . ' order by prio,name');
+    $tb->setQuery('select * from '.$REX['TABLE_PREFIX'].'xform_table ' . $where . ' order by prio,name');
 
     $return = array();
     foreach ($tb->getArray() as $t) {
@@ -99,7 +129,8 @@ class rex_xform_manager_table
 
   static function getMaximumPrio($table_name)
   {
-    $sql = 'select max(prio) as prio from rex_xform_field where table_name="' . $table_name . '" order by prio';
+    global $REX;
+    $sql = 'select max(prio) as prio from '.$REX['TABLE_PREFIX'].'xform_field where table_name="' . $table_name . '" order by prio';
     $gf = rex_sql::factory();
     // $gf->debugsql = 1;
     $gf->setQuery($sql);
@@ -122,12 +153,13 @@ class rex_xform_manager_table
 
   static function getXFormFields($table_name, $filter = array())
   {
+    global $REX;
     $add_sql = '';
     foreach ($filter as $k => $v) {
       $add_sql = 'AND `' . mysql_real_escape_string($k) . '`="' . mysql_real_escape_string($v) . '"';
     }
 
-    $sql = 'select * from rex_xform_field where table_name="' . $table_name . '" ' . $add_sql . ' order by prio';
+    $sql = 'select * from '.$REX['TABLE_PREFIX'].'xform_field where table_name="' . $table_name . '" ' . $add_sql . ' order by prio';
     $gf = rex_sql::factory();
     // $gf->debugsql = 1;
     $gf->setQuery($sql);

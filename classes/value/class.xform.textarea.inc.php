@@ -26,10 +26,12 @@ class rex_xform_textarea extends rex_xform_abstract
     }
 
     $this->params['form_output'][$this->getId()] = '
-    <p class="formtextarea" id="' . $this->getHTMLId() . '">
-      <label class="textarea ' . $wc . '" for="' . $this->getFieldId() . '" >' . $this->getLabel() . '</label>
+    <div class="control-group formtextarea" id="' . $this->getHTMLId() . '">
+      <label class="control-label textarea ' . $wc . '" for="' . $this->getFieldId() . '" >' . $this->getLabel() . '</label>
+      <div class="controls">
       <textarea class="textarea' . $classes . $wc . '" name="' . $this->getFieldName() . '" id="' . $this->getFieldId() . '" cols="80" rows="10">' . htmlspecialchars(stripslashes($this->getValue())) . '</textarea>
-    </p>';
+</div>    
+</div>';
 
     $this->params['value_pool']['email'][$this->getName()] = stripslashes($this->getValue());
     if ($this->getElement(4) != 'no_db') {

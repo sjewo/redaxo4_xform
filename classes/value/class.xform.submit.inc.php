@@ -26,7 +26,7 @@ class rex_xform_submit extends rex_xform_abstract
     $this->params['form_output'][$this->getId()] = '
     <div class="control-group">
     <div class="controls formsubmit ' . $this->getHTMLClass() . '">
-    <button type="submit" class="btn submit ' . $wc . '" name="' . $this->getFieldName() . '" id="' . $this->getFieldId() . '" >' . htmlspecialchars(stripslashes(rex_translate($this->getValue()))) . '</button>
+    <button type="submit" class="btn btn-primary submit ' . $wc . '" name="' . $this->getFieldName() . '" id="' . $this->getFieldId() . '" >' . htmlspecialchars(stripslashes(rex_translate($this->getValue()))) . '</button>
     </div>
     </div>';
 

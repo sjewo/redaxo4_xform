@@ -53,10 +53,11 @@ class rex_xform_checkbox extends rex_xform_abstract
         $wc = $this->params['warning'][$this->getId()];
 
       $this->params['form_output'][$this->getId()] = '
-      <p class="formcheckbox formlabel-' . $this->getName() . '" id="' . $this->getHTMLId() . '">
+      <div class="control-group formcheckbox formlabel-' . $this->getName() . '" id="' . $this->getHTMLId() . '">
+       <label class="checkbox control-label' . $wc . '" for="' . $this->getFieldId() . '" >
         <input type="checkbox" class="checkbox ' . $wc . '" name="' . $this->getFieldName() . '" id="' . $this->getFieldId() . '" value="' . $v . '" ' . $checked . ' />
-        <label class="checkbox ' . $wc . '" for="' . $this->getFieldId() . '" >' . $this->getLabel() . '</label>
-      </p>';
+        ' . $this->getLabel() . '</label>
+      </div>';
 
       ## set values
       $this->params['value_pool']['email'][$this->getName()] = stripslashes($this->getValue());

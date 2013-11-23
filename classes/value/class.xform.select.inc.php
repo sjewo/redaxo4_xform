@@ -51,8 +51,8 @@ class rex_xform_select extends rex_xform_abstract
 
     if ($multiple) {
       $size = (int) $this->getElement(7);
-      if ($size < 2)
-        $size = count($fields);
+     # if ($size < 2)
+     #   $size = count($fields);
 
       $SEL->setName($this->getFieldName() . '[]');
       $SEL->setSize($size);
